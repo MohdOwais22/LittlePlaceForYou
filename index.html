@@ -460,7 +460,7 @@ let LETTERS = [
   {
     id: "happy",
     title: "Open When You’re Happy",
-    seal: "H",
+    seal: "😊",
     body: [
       "If you’re reading this with a smile already on your face — good. Keep it there a little longer.",
       "I want you to know that your joy is one of my favourite things in this world. Not the big, loud kind only — the small kind too. The way your eyes soften when something delights you.",
@@ -472,7 +472,7 @@ let LETTERS = [
   {
     id: "missing",
     title: "Open When You’re Missing Me",
-    seal: "M",
+    seal: "😔",
     body: [
       "Distance is strange — it doesn’t make the feeling smaller, just quieter.",
       "If you’re missing me right now, close your eyes for a second. I’m there, in the ordinary places: the song you keep replaying, the side of the bed that still feels like mine.",
@@ -484,7 +484,7 @@ let LETTERS = [
   {
     id: "angry",
     title: "Open When You’re Angry At Me",
-    seal: "A",
+    seal: "😡",
     body: [
       "First — you’re allowed to be angry. I won’t ask you to set it down before you’re ready.",
       "If I hurt you, I’m sorry. Not the kind of sorry that wants to end the conversation quickly, but the kind that wants to understand it fully.",
@@ -494,7 +494,7 @@ let LETTERS = [
   {
     id: "crying",
     title: "Open When You’re Crying",
-    seal: "C",
+    seal: "😭",
     body: [
       "Let it out. Don’t hold it back on my account — I’d rather you feel it than fold it away.",
       "I wish I could sit beside you right now, say nothing useful, and just be there while it passes.",
@@ -503,19 +503,9 @@ let LETTERS = [
     audio: true
   },
   {
-    id: "overthinking",
-    title: "Open When You’re Overthinking",
-    seal: "O",
-    body: [
-      "Your mind is running again, I know. Spinning the same thought in a hundred directions.",
-      "Here’s the truth, plainly: you are safe, you are loved, and most of what you’re afraid of hasn’t happened and likely won’t.",
-      "Breathe in for four, hold for four, out for four. Just for a minute. I’ll wait right here."
-    ]
-  },
-  {
     id: "hug",
     title: "Open When You Need A Hug",
-    seal: "H",
+    seal: "🫂",
     body: [
       "Wrap the blanket around you a little tighter — pretend, for a moment, that it’s my arms instead.",
       "I wish I could hold you properly right now, the way that makes the world go quiet for a while.",
@@ -526,7 +516,7 @@ let LETTERS = [
   {
     id: "sleep",
     title: "Open When You Can’t Sleep",
-    seal: "S",
+    seal: "🥱",
     body: [
       "It’s late, and your mind won’t settle. I understand — mine does the same on quiet nights.",
       "Let this be your lullaby: you did enough today. Tomorrow doesn’t need you yet.",
@@ -538,7 +528,7 @@ let LETTERS = [
   {
     id: "anxious",
     title: "Open When You’re Feeling Anxious",
-    seal: "A",
+    seal: "🌻",
     body: [
       "Anxiety lies. It tells you the worst version of things and dresses it up as truth.",
       "You are doing better than you think. One step, one breath, one minute at a time — that’s all anyone is asking of you.",
@@ -546,70 +536,15 @@ let LETTERS = [
     ]
   },
   {
-    id: "motivation",
-    title: "Open When You Need Motivation",
-    seal: "M",
-    body: [
-      "You’ve survived every difficult day so far. That’s not luck — that’s strength, quietly proven again and again.",
-      "Whatever you’re facing now is just the next thing, not the last thing. You’ll get through this one too.",
-      "Stand a little taller today. I’m proud of you — for trying, even when it’s hard."
-    ]
-  },
-  {
     id: "lonely",
     title: "Open When You Feel Lonely",
-    seal: "L",
+    seal: "🫶",
     body: [
       "Loneliness can sit in a room full of people just as easily as an empty one. I know.",
       "You are thought of, often and warmly, even on the days it doesn’t feel that way.",
       "Reach out — to me, to someone, to anyone who feels safe. You don’t have to carry quiet rooms alone."
     ],
     audio: true
-  },
-  {
-    id: "thatday",
-    title: "Open When You Remember That Day",
-    seal: "•",
-    dark: true,
-    quote: "I know I can’t erase that memory. If I could, I would. Since I can’t… I promise to spend my days creating memories that slowly become stronger than that one.",
-    body: [
-      "This page doesn’t need bright colours or easy words. Some memories deserve quiet instead.",
-      "I won’t pretend it didn’t happen, or rush you toward forgetting. I just want you to know I see it, I carry it too, and I’m not going anywhere."
-    ],
-    audio: true
-  },
-  {
-    id: "doubt",
-    title: "Open When You Doubt My Love",
-    seal: "D",
-    body: [
-      "If doubt has crept in, let me say this plainly, without metaphor: I love you. Today, and the version of today that comes tomorrow.",
-      "Doubt isn’t evidence — it’s just fear wearing a convincing voice. Don’t let it speak for me.",
-      "Ask me, anytime, in any way you need. I will tell you the truth, always: it’s you."
-    ]
-  },
-  {
-    id: "birthday",
-    title: "Open On Your Birthday",
-    seal: "B",
-    body: [
-      "Happy birthday. Another year of you in this world — that alone is worth celebrating.",
-      "I hope today feels light and full, surrounded by people who love you the way you deserve.",
-      "Here’s to everything still ahead of you. I’m grateful to be watching it unfold."
-    ],
-    gallery: true, spotify: true,
-    song: { title: "Replace With Your Song", artist: "Artist Name" }
-  },
-  {
-    id: "meetagain",
-    title: "Open When We Meet Again",
-    seal: "♡",
-    body: [
-      "However long it’s been, however much has changed — some things won’t have. The way I feel about you is one of them.",
-      "I’ve thought about this moment more times than I can count. I hope it’s everything we imagined, and quieter, and softer too.",
-      "Welcome back to each other."
-    ],
-    gallery: true
   },
 ];
 
@@ -1023,7 +958,7 @@ function playFinale(){
 
   l1.textContent = window.SETTINGS?.finaleLine1 || "Thank you for giving me the chance to become a better man.";
   l2.textContent = window.SETTINGS?.finaleLine2 || "No matter where life takes us… loving you has changed me forever.";
-  l3.textContent = window.SETTINGS?.finaleSignature || "— Owais ❤️";
+  l3.textContent = window.SETTINGS?.finaleSignature || "— 🩷";
 
   const tl = gsap.timeline();
   tl.fromTo(finale, { autoAlpha:0 }, { autoAlpha:1, duration:1.3, ease:"power1.inOut" })
