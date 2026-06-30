@@ -1,0 +1,1221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Open When… — A Letter Box</title>
+<meta name="description" content="A private collection of letters, written for the moments you need them most.">
+<meta name="theme-color" content="#FAF8F5">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="/assets/icon-192.png">
+<link rel="apple-touch-icon" href="/assets/icon-192.png">
+
+<!-- Fonts -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;600;700&family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+  tailwind.config = {
+    darkMode: 'class',
+    theme: {
+      extend: {
+        colors: {
+          paper: '#FAF8F5',
+          beige: '#EDE3D3',
+          'beige-deep': '#DCCBAE',
+          grey: '#9C9690',
+          ink: '#3A352F',
+          blue: '#7C92A8',
+          'blue-deep': '#5A7894',
+          dark: '#161310',
+          'dark-paper': '#211C16',
+          gold: '#C9A467',
+          'gold-soft': '#E4C896',
+        },
+        fontFamily: {
+          hand: ['"Caveat"', 'cursive'],
+          serif: ['"Cormorant Garamond"', 'serif'],
+          sans: ['"Inter"', 'sans-serif'],
+        }
+      }
+    }
+  }
+</script>
+
+<!-- GSAP + ScrollTrigger -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+<!-- Lenis smooth scroll -->
+<script src="https://unpkg.com/lenis@1.1.13/dist/lenis.min.js"></script>
+
+<style>
+  :root{
+    --grain-opacity: .035;
+  }
+  html { scroll-behavior: auto; } /* Lenis handles smoothing */
+  html.lenis, html.lenis body{ height:auto; }
+  .lenis.lenis-smooth{ scroll-behavior:auto; }
+
+  body {
+    background-color: #FAF8F5;
+    background-image:
+      radial-gradient(circle at 20% 20%, rgba(124,146,168,.06), transparent 40%),
+      radial-gradient(circle at 80% 70%, rgba(220,203,174,.2), transparent 45%);
+    background-attachment: fixed;
+    transition: background-color .7s ease, color .7s ease;
+  }
+  html.dark body{
+    background-color:#161310;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(201,164,103,.08), transparent 38%),
+      radial-gradient(circle at 85% 75%, rgba(124,146,168,.06), transparent 45%),
+      radial-gradient(circle at 50% 100%, rgba(38,32,22,.7), transparent 55%);
+  }
+
+  /* slow animated background gradient wash */
+  .bg-wash{
+    position:fixed; inset:-10%; z-index:0; pointer-events:none;
+    background: linear-gradient(120deg, rgba(124,146,168,.07), rgba(220,203,174,.1), rgba(124,146,168,.05));
+    background-size: 200% 200%;
+    animation: washMove 26s ease-in-out infinite;
+    filter: blur(60px);
+  }
+  html.dark .bg-wash{
+    background: linear-gradient(120deg, rgba(201,164,103,.07), rgba(38,32,22,.4), rgba(124,146,168,.05));
+    background-size: 200% 200%;
+  }
+  @keyframes washMove{
+    0%,100%{ background-position: 0% 30%; }
+    50%{ background-position: 100% 70%; }
+  }
+
+  /* soft light rays */
+  .light-rays{
+    position:fixed; inset:0; z-index:1; pointer-events:none; opacity:.5;
+    background: conic-gradient(from 200deg at 20% -10%, rgba(255,255,255,0) 0deg, rgba(255,251,240,.35) 8deg, rgba(255,255,255,0) 20deg);
+  }
+  html.dark .light-rays{
+    background: conic-gradient(from 200deg at 20% -10%, rgba(0,0,0,0) 0deg, rgba(201,164,103,.12) 8deg, rgba(0,0,0,0) 20deg);
+    opacity:.7;
+  }
+
+  /* paper grain overlay */
+  .grain {
+    position: fixed; inset: 0; pointer-events: none; z-index: 60; opacity: var(--grain-opacity); mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  html.dark .grain{ opacity:.07; mix-blend-mode: overlay; }
+
+  ::selection { background: #7C92A8; color: #FAF8F5; }
+  html.dark ::selection{ background:#C9A467; color:#161310; }
+
+  /* ============ LUXURY CURSOR ============ */
+  .cursor-dot, .cursor-ring {
+    position: fixed; top:0; left:0; pointer-events:none; z-index:9999;
+    border-radius:50%; transform: translate(-50%,-50%);
+    transition: opacity .3s ease, background .3s ease;
+  }
+  .cursor-dot{ width:6px; height:6px; background:#7C92A8; }
+  .cursor-ring{
+    width:34px; height:34px; border:1px solid rgba(124,146,168,.5);
+    transition: width .3s cubic-bezier(.16,1,.3,1), height .3s cubic-bezier(.16,1,.3,1), border-color .3s ease, background .3s ease, transform .05s linear;
+  }
+  html.dark .cursor-dot{ background:#E4C896; }
+  html.dark .cursor-ring{ border-color: rgba(228,200,150,.5); }
+  .cursor-ring.cursor-hover{ background: rgba(124,146,168,.08); box-shadow: 0 0 24px rgba(124,146,168,.35); }
+  html.dark .cursor-ring.cursor-hover{ background: rgba(228,200,150,.08); box-shadow: 0 0 24px rgba(228,200,150,.3); }
+  @media (hover:none){ .cursor-dot,.cursor-ring{ display:none; } }
+
+  /* click particle burst */
+  .click-burst{
+    position:fixed; z-index:9998; pointer-events:none; border-radius:50%;
+    background: radial-gradient(circle, rgba(124,146,168,.8), transparent 70%);
+  }
+
+  /* magnetic targets just need this class */
+  [data-magnetic]{ will-change: transform; }
+
+  .particle{ position:absolute; border-radius:50%; background: rgba(124,146,168,.35); pointer-events:none; }
+  html.dark .particle{ background: rgba(228,200,150,.3); }
+
+  .firefly{
+    position:absolute; border-radius:50%; pointer-events:none;
+    background: radial-gradient(circle, rgba(228,200,150,1), rgba(228,200,150,0) 70%);
+    box-shadow: 0 0 8px 2px rgba(228,200,150,.6);
+  }
+  .petal{
+    position:absolute; pointer-events:none; border-radius: 0 100% 0 100%/0 100% 0 100%;
+    background: linear-gradient(135deg, rgba(220,203,174,.85), rgba(124,146,168,.5));
+    opacity:.7;
+  }
+
+  /* ============ ENVELOPE ============ */
+  .envelope-card{
+    position:relative; aspect-ratio: 4/3; perspective:1400px;
+  }
+  .envelope-front{
+    position:relative; width:100%; height:100%;
+    background: linear-gradient(155deg,#fffefb,#f3ead9 60%,#ead9bd);
+    border-radius:10px;
+    box-shadow: 0 1px 2px rgba(58,53,47,.08), 0 16px 36px -16px rgba(58,53,47,.3);
+    border:1px solid rgba(58,53,47,.08);
+    overflow:hidden;
+    transition: box-shadow .45s cubic-bezier(.16,1,.3,1), transform .45s cubic-bezier(.16,1,.3,1);
+    transform-style: preserve-3d;
+  }
+  html.dark .envelope-front{
+    background: linear-gradient(155deg,#2c2820,#241f19 60%,#1d1812);
+    border-color: rgba(228,200,150,.1);
+    box-shadow: 0 1px 2px rgba(0,0,0,.35), 0 16px 36px -16px rgba(0,0,0,.65);
+  }
+  .envelope-card:hover .envelope-front{ transform: translateY(-8px) rotateX(2deg); box-shadow: 0 1px 2px rgba(58,53,47,.1), 0 28px 50px -18px rgba(58,53,47,.4); }
+  html.dark .envelope-card:hover .envelope-front{ box-shadow: 0 1px 2px rgba(0,0,0,.4), 0 28px 50px -18px rgba(201,164,103,.18); }
+
+  /* subtle paper fiber texture inside envelope */
+  .envelope-front::after{
+    content:''; position:absolute; inset:0; pointer-events:none; opacity:.5; mix-blend-mode:multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.05'/%3E%3C/svg%3E");
+  }
+
+  .flap{
+    position:absolute; top:0; left:0; width:100%; height:62%;
+    background: linear-gradient(155deg,#f6efdf,#e7d6b8);
+    clip-path: polygon(0 0, 100% 0, 50% 78%);
+    transform-origin: top center;
+    box-shadow: inset 0 -10px 16px -12px rgba(58,53,47,.25);
+    transition: transform 1s cubic-bezier(.65,0,.35,1);
+    z-index:3;
+  }
+  html.dark .flap{ background: linear-gradient(155deg,#2f2a21,#221d17); }
+  .envelope-card.open .flap{ transform: rotateX(172deg); }
+
+  .seal{
+    position:absolute; top:48%; left:50%; transform:translate(-50%,-50%);
+    width:48px; height:48px; border-radius:50%;
+    background: radial-gradient(circle at 35% 30%, #8FA6BB, #5A7894 60%, #46627d);
+    box-shadow: 0 4px 10px rgba(58,53,47,.35), inset 0 2px 3px rgba(255,255,255,.25);
+    display:flex; align-items:center; justify-content:center;
+    z-index:4; transition: transform .6s cubic-bezier(.34,1.56,.64,1), opacity .4s ease;
+    font-family:'Caveat',cursive; color:#FAF8F5; font-size:18px;
+  }
+  html.dark .seal{ background: radial-gradient(circle at 35% 30%, #E4C896, #C9A467 60%, #a9854f); color:#211C16; box-shadow: 0 4px 10px rgba(0,0,0,.4), inset 0 2px 3px rgba(255,255,255,.3); }
+  .envelope-card.open .seal{ transform:translate(-50%,-50%) scale(0) rotate(25deg); opacity:0; }
+  .envelope-card:hover .seal{ transform:translate(-50%,-50%) scale(1.08); }
+  .seal-crack{
+    position:absolute; inset:0; border-radius:50%; opacity:0; pointer-events:none;
+  }
+
+  .letter-peek{
+    position:absolute; left:6%; right:6%; bottom:6%; top:14%;
+    background:#FAF8F5; border-radius:4px;
+    box-shadow:0 -2px 10px rgba(58,53,47,.1);
+    transform: translateY(6%);
+    transition: transform 1s cubic-bezier(.65,0,.35,1) .08s;
+    z-index:2;
+  }
+  .letter-peek::before{
+    content:''; position:absolute; top:10px; left:10%; right:10%; height:2px; background:rgba(58,53,47,.08); box-shadow: 0 8px 0 rgba(58,53,47,.06), 0 16px 0 rgba(58,53,47,.04);
+  }
+  html.dark .letter-peek{ background:#2A261F; }
+  html.dark .letter-peek::before{ background:rgba(228,200,150,.1); box-shadow: 0 8px 0 rgba(228,200,150,.07), 0 16px 0 rgba(228,200,150,.05); }
+  .envelope-card.open .letter-peek{ transform: translateY(-22%); }
+
+  .env-label{
+    position:absolute; bottom:10%; left:0; right:0; text-align:center;
+    font-family:'Caveat',cursive; font-weight:600; font-size:1.35rem;
+    color:#3A352F; z-index:1; padding:0 1rem;
+  }
+  html.dark .env-label{ color:#E8DFD3; }
+
+  /* ============ LETTER MODAL ============ */
+  #letterOverlay{
+    position:fixed; inset:0; z-index:80; display:none;
+    background: rgba(58,53,47,.4); backdrop-filter: blur(8px) saturate(120%);
+  }
+  html.dark #letterOverlay{ background: rgba(8,7,5,.6); }
+
+  .letter-sheet{
+    max-width: 760px; margin: 4vh auto; min-height: 86vh;
+    background: #FFFEFC;
+    background-image:
+      linear-gradient(180deg, rgba(255,255,255,.6), rgba(255,255,255,0) 12%);
+    border-radius: 10px;
+    box-shadow: 0 50px 90px -20px rgba(0,0,0,.45), 0 2px 0 rgba(255,255,255,.6) inset;
+    position:relative;
+    clip-path: polygon(0 0, 100% 0, 100% 99.3%, 99.4% 100%, .6% 100%, 0 99.3%);
+  }
+  .letter-sheet::before, .letter-sheet::after{
+    content:''; position:absolute; pointer-events:none;
+  }
+  .letter-sheet::before{
+    inset:0; border-radius:10px; opacity:.4; mix-blend-mode:multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.045'/%3E%3C/svg%3E");
+  }
+  html.dark .letter-sheet{ background:#211D18; box-shadow: 0 50px 90px -20px rgba(0,0,0,.7); }
+  .letter-sheet.dark-theme{ background:#15130F; }
+
+  .reading-progress{
+    position:fixed; top:0; left:0; height:3px; width:0%; z-index:90;
+    background: linear-gradient(90deg, #7C92A8, #5A7894);
+    transition: width .1s linear;
+  }
+  html.dark .reading-progress{ background: linear-gradient(90deg, #E4C896, #C9A467); }
+
+  .scrollbar-thin::-webkit-scrollbar{ width:6px; }
+  .scrollbar-thin::-webkit-scrollbar-thumb{ background: rgba(124,146,168,.4); border-radius:4px; }
+  html.dark .scrollbar-thin::-webkit-scrollbar-thumb{ background: rgba(228,200,150,.35); }
+
+  .fade-line{ opacity:0; }
+
+  .signature-path{
+    stroke-dasharray: 800; stroke-dashoffset: 800;
+  }
+
+  /* ============ POLAROID GALLERY ============ */
+  .polaroid{
+    background:#fff; padding:10px 10px 34px; border-radius:3px;
+    box-shadow: 0 10px 20px -8px rgba(58,53,47,.35), 0 2px 4px rgba(58,53,47,.1);
+    transition: transform .35s cubic-bezier(.16,1,.3,1), box-shadow .35s ease;
+    cursor:pointer;
+  }
+  html.dark .polaroid{ background:#2A261F; box-shadow: 0 10px 20px -8px rgba(0,0,0,.5); }
+  .polaroid:hover{ transform: translateY(-6px) scale(1.03) rotate(var(--tilt,0deg)); box-shadow: 0 22px 34px -14px rgba(58,53,47,.4); }
+  .polaroid-img{
+    aspect-ratio:1/1; border-radius:1px;
+    background: linear-gradient(135deg,#e7dcc7,#cfc2a5);
+    display:flex; align-items:center; justify-content:center;
+    color:#9C9690; font-family:'Inter',sans-serif; font-size:10px; text-transform:uppercase; letter-spacing:.15em; text-align:center; padding:8px;
+  }
+  html.dark .polaroid-img{ background: linear-gradient(135deg,#332c20,#241f17); color:#9C9690; }
+
+  /* ============ LIGHTBOX ============ */
+  #lightbox{ position:fixed; inset:0; z-index:120; display:none; background:rgba(8,7,5,.88); backdrop-filter: blur(6px); }
+
+  /* ============ AUDIO PLAYER ============ */
+  .voice-player{
+    border-radius: 16px;
+    background: linear-gradient(155deg, rgba(124,146,168,.12), rgba(124,146,168,.04));
+    border: 1px solid rgba(124,146,168,.18);
+    box-shadow: 0 12px 30px -16px rgba(58,53,47,.3);
+    position:relative; overflow:hidden;
+  }
+  html.dark .voice-player{ background: linear-gradient(155deg, rgba(228,200,150,.1), rgba(228,200,150,.03)); border-color: rgba(228,200,150,.18); }
+  .voice-player::before{
+    content:''; position:absolute; inset:-40%; pointer-events:none; opacity:.5;
+    background: radial-gradient(circle, rgba(124,146,168,.25), transparent 60%);
+    filter: blur(20px);
+  }
+  html.dark .voice-player::before{ background: radial-gradient(circle, rgba(228,200,150,.2), transparent 60%); }
+  .play-btn{
+    width:46px; height:46px; border-radius:50%; flex-shrink:0;
+    background: linear-gradient(155deg,#7C92A8,#5A7894);
+    display:flex; align-items:center; justify-content:center; color:#FAF8F5;
+    box-shadow: 0 6px 16px -6px rgba(90,120,148,.6);
+    transition: transform .25s cubic-bezier(.34,1.56,.64,1);
+  }
+  html.dark .play-btn{ background: linear-gradient(155deg,#E4C896,#C9A467); color:#211C16; box-shadow: 0 6px 16px -6px rgba(201,164,103,.5); }
+  .play-btn:active{ transform: scale(.92); }
+  .waveform{ display:flex; align-items:center; gap:3px; height:32px; flex:1; }
+  .wave-bar{ width:3px; border-radius:2px; background: rgba(124,146,168,.45); transition: background .3s ease, height .2s ease; }
+  html.dark .wave-bar{ background: rgba(228,200,150,.4); }
+  .wave-bar.played{ background:#5A7894; }
+  html.dark .wave-bar.played{ background:#C9A467; }
+
+  /* ============ SPOTIFY GLASS CARD ============ */
+  .spotify-card{
+    border-radius:16px; padding:16px;
+    background: linear-gradient(155deg, rgba(124,146,168,.1), rgba(124,146,168,.03));
+    border:1px solid rgba(124,146,168,.18);
+    display:flex; align-items:center; gap:14px;
+    backdrop-filter: blur(6px);
+  }
+  html.dark .spotify-card{ background: linear-gradient(155deg, rgba(228,200,150,.08), rgba(228,200,150,.02)); border-color: rgba(228,200,150,.16); }
+  .album-art{
+    width:58px; height:58px; border-radius:10px; flex-shrink:0;
+    background: linear-gradient(135deg,#7C92A8,#46627d);
+    display:flex; align-items:center; justify-content:center; color:#FAF8F5;
+    box-shadow: 0 8px 18px -8px rgba(58,53,47,.4);
+  }
+  html.dark .album-art{ background: linear-gradient(135deg,#C9A467,#8a6c3e); color:#211C16; }
+  .eq{ display:flex; align-items:flex-end; gap:2px; height:14px; }
+  .eq span{ width:3px; background:#5A7894; border-radius:1px; animation: eqBounce 1s ease-in-out infinite; }
+  html.dark .eq span{ background:#C9A467; }
+  .eq span:nth-child(1){ animation-delay:-.6s; }
+  .eq span:nth-child(2){ animation-delay:-.3s; }
+  .eq span:nth-child(3){ animation-delay:-.9s; }
+  .eq span:nth-child(4){ animation-delay:-.15s; }
+  @keyframes eqBounce{ 0%,100%{ height:4px; } 50%{ height:14px; } }
+
+  /* ============ MAGNETIC / RIPPLE BUTTON ============ */
+  .ripple-btn{ position:relative; overflow:hidden; }
+  .ripple{
+    position:absolute; border-radius:50%; transform:scale(0); opacity:.5;
+    background: rgba(124,146,168,.45); pointer-events:none;
+    animation: rippleAnim .6s ease-out forwards;
+  }
+  html.dark .ripple{ background: rgba(228,200,150,.4); }
+  @keyframes rippleAnim{ to{ transform:scale(2.6); opacity:0; } }
+
+  /* focus visibility for accessibility */
+  a:focus-visible, button:focus-visible, [tabindex]:focus-visible{
+    outline: 2px solid #5A7894; outline-offset: 3px; border-radius:4px;
+  }
+  html.dark a:focus-visible, html.dark button:focus-visible, html.dark [tabindex]:focus-visible{
+    outline-color:#C9A467;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: .001ms !important; animation-iteration-count: 1 !important; transition-duration: .001ms !important; }
+  }
+</style>
+</head>
+
+<body class="font-serif text-ink dark:text-beige antialiased overflow-x-hidden">
+
+<div class="bg-wash"></div>
+<div class="light-rays"></div>
+<div class="grain"></div>
+<div class="cursor-dot" id="cursorDot"></div>
+<div class="cursor-ring" id="cursorRing"></div>
+<div id="particles" class="fixed inset-0 pointer-events-none z-10 overflow-hidden"></div>
+<div id="reading-progress" class="reading-progress" style="display:none"></div>
+
+<!-- NAV -->
+<header class="fixed top-0 inset-x-0 z-50 flex items-center justify-between px-6 sm:px-10 py-5">
+  <span class="font-hand text-2xl tracking-wide" data-magnetic>Open When…</span>
+  <button id="themeToggle" aria-label="Toggle dark mode" data-magnetic
+    class="w-11 h-11 rounded-full border border-ink/15 dark:border-beige/20 flex items-center justify-center hover:border-blue dark:hover:border-gold transition-colors ripple-btn">
+    <svg id="iconSun" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41"/></svg>
+    <svg id="iconMoon" class="w-4 h-4 hidden" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/></svg>
+  </button>
+</header>
+
+<!-- HERO -->
+<section class="relative z-20 px-6 pt-36 pb-20 sm:pt-48 sm:pb-28 text-center max-w-3xl mx-auto" id="hero">
+  <p class="font-sans text-[11px] tracking-[0.35em] uppercase text-grey mb-5 hero-line">a private collection, for you</p>
+  <h1 class="font-hand text-6xl sm:text-8xl leading-[0.95] mb-7 hero-title">
+    <span class="hero-char">O</span><span class="hero-char">p</span><span class="hero-char">e</span><span class="hero-char">n</span><span class="hero-char">&nbsp;</span><span class="hero-char">W</span><span class="hero-char">h</span><span class="hero-char">e</span><span class="hero-char">n</span><span class="hero-char">…</span>
+  </h1>
+  <p class="font-serif italic text-lg sm:text-xl text-ink/70 dark:text-beige/70 max-w-xl mx-auto leading-relaxed">
+    <span id="typewriter"></span><span class="typewriter-cursor">|</span>
+  </p>
+  <div class="mt-12 flex flex-col items-center gap-2 text-grey hero-line">
+    <a href="#envelopeGrid" data-magnetic class="font-sans text-[10px] tracking-[0.3em] uppercase hover:text-blue-deep dark:hover:text-gold transition-colors ripple-btn px-4 py-2 rounded-full border border-ink/10 dark:border-beige/15">choose a letter</a>
+    <svg class="w-3.5 h-3.5 animate-bounce mt-2" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M19 9l-7 7-7-7"/></svg>
+  </div>
+</section>
+
+<!-- ENVELOPE GRID -->
+<main class="relative z-20 px-6 sm:px-10 pb-32 max-w-6xl mx-auto">
+  <div id="envelopeGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-7 sm:gap-9"></div>
+</main>
+
+<footer class="relative z-20 text-center pb-12 font-sans text-[11px] tracking-[0.25em] uppercase text-grey">
+  written with care, kept just for you
+</footer>
+
+<!-- LETTER OVERLAY -->
+<div id="letterOverlay" role="dialog" aria-modal="true" aria-label="Letter">
+  <button id="closeLetter" aria-label="Close letter" data-magnetic
+    class="fixed top-5 right-5 sm:top-8 sm:right-8 z-50 w-11 h-11 rounded-full bg-paper/90 dark:bg-dark/90 border border-ink/10 dark:border-beige/15 flex items-center justify-center hover:border-blue dark:hover:border-gold transition-colors ripple-btn">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div id="letterScroll" class="h-screen overflow-y-auto scrollbar-thin px-5 sm:px-8 py-4">
+    <article id="letterSheet" class="letter-sheet px-7 sm:px-16 py-14 sm:py-20"></article>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div id="lightbox" role="dialog" aria-modal="true" aria-label="Photo viewer">
+  <button id="lightboxClose" aria-label="Close photo viewer" data-magnetic
+    class="fixed top-5 right-5 z-50 w-11 h-11 rounded-full bg-paper/90 dark:bg-dark/90 border border-ink/10 flex items-center justify-center">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  </button>
+  <div class="h-full w-full flex items-center justify-center px-6" id="lightboxStage"></div>
+</div>
+
+<!-- CINEMATIC FINALE -->
+<div id="finale" class="fixed inset-0 z-[100] bg-paper hidden flex items-center justify-center px-8 text-center">
+  <div class="max-w-xl">
+    <p id="finaleLine1" class="fade-line font-serif text-2xl sm:text-3xl leading-relaxed text-ink mb-8"></p>
+    <p id="finaleLine2" class="fade-line font-serif text-2xl sm:text-3xl leading-relaxed text-ink mb-10"></p>
+    <p id="finaleLine3" class="fade-line font-hand text-4xl text-blue-deep"></p>
+    <button id="finaleClose" data-magnetic class="fade-line mt-14 font-sans text-[11px] tracking-[0.3em] uppercase text-grey hover:text-blue-deep transition-colors ripple-btn px-4 py-2 rounded-full">close this letter, gently</button>
+  </div>
+</div>
+
+<script type="module" src="js/public-app.js"></script>
+<script>
+/* =========================================================
+   CONTENT — FALLBACK ONLY. Real content now loads from
+   Firestore via js/public-app.js, which builds window.LETTERS
+   and calls window.renderEnvelopes() once data arrives.
+   This array is only used while Firestore data is loading,
+   or if the device is offline and nothing is cached yet.
+========================================================= */
+let LETTERS = [
+  {
+    id: "happy",
+    title: "Open When You’re Happy",
+    seal: "H",
+    body: [
+      "If you’re reading this with a smile already on your face — good. Keep it there a little longer.",
+      "I want you to know that your joy is one of my favourite things in this world. Not the big, loud kind only — the small kind too. The way your eyes soften when something delights you.",
+      "Whatever made you happy today, let it stay with you. You deserve every bit of it, and so much more."
+    ],
+    gallery: true, audio: true, spotify: true,
+    song: { title: "Replace With Your Song", artist: "Artist Name" }
+  },
+  {
+    id: "missing",
+    title: "Open When You’re Missing Me",
+    seal: "M",
+    body: [
+      "Distance is strange — it doesn’t make the feeling smaller, just quieter.",
+      "If you’re missing me right now, close your eyes for a second. I’m there, in the ordinary places: the song you keep replaying, the side of the bed that still feels like mine.",
+      "I’m missing you too, in the exact same quiet way. That hasn’t changed, and it won’t."
+    ],
+    audio: true, spotify: true,
+    song: { title: "Replace With Your Song", artist: "Artist Name" }
+  },
+  {
+    id: "angry",
+    title: "Open When You’re Angry At Me",
+    seal: "A",
+    body: [
+      "First — you’re allowed to be angry. I won’t ask you to set it down before you’re ready.",
+      "If I hurt you, I’m sorry. Not the kind of sorry that wants to end the conversation quickly, but the kind that wants to understand it fully.",
+      "Take your time. I’ll still be here when the anger has had its say, ready to listen properly."
+    ]
+  },
+  {
+    id: "crying",
+    title: "Open When You’re Crying",
+    seal: "C",
+    body: [
+      "Let it out. Don’t hold it back on my account — I’d rather you feel it than fold it away.",
+      "I wish I could sit beside you right now, say nothing useful, and just be there while it passes.",
+      "Tears aren’t weakness. They’re just love and hurt finding a way out. Be gentle with yourself."
+    ],
+    audio: true
+  },
+  {
+    id: "overthinking",
+    title: "Open When You’re Overthinking",
+    seal: "O",
+    body: [
+      "Your mind is running again, I know. Spinning the same thought in a hundred directions.",
+      "Here’s the truth, plainly: you are safe, you are loved, and most of what you’re afraid of hasn’t happened and likely won’t.",
+      "Breathe in for four, hold for four, out for four. Just for a minute. I’ll wait right here."
+    ]
+  },
+  {
+    id: "hug",
+    title: "Open When You Need A Hug",
+    seal: "H",
+    body: [
+      "Wrap the blanket around you a little tighter — pretend, for a moment, that it’s my arms instead.",
+      "I wish I could hold you properly right now, the way that makes the world go quiet for a while.",
+      "Until then, know that you’re held in my thoughts, fully and without condition."
+    ],
+    gallery: true
+  },
+  {
+    id: "sleep",
+    title: "Open When You Can’t Sleep",
+    seal: "S",
+    body: [
+      "It’s late, and your mind won’t settle. I understand — mine does the same on quiet nights.",
+      "Let this be your lullaby: you did enough today. Tomorrow doesn’t need you yet.",
+      "Put on something soft, dim the light, and let yourself rest. I’ll be here in the morning, same as always."
+    ],
+    spotify: true, audio: true,
+    song: { title: "Replace With Your Song", artist: "Artist Name" }
+  },
+  {
+    id: "anxious",
+    title: "Open When You’re Feeling Anxious",
+    seal: "A",
+    body: [
+      "Anxiety lies. It tells you the worst version of things and dresses it up as truth.",
+      "You are doing better than you think. One step, one breath, one minute at a time — that’s all anyone is asking of you.",
+      "I believe in you fully, even on the days you can’t believe in yourself."
+    ]
+  },
+  {
+    id: "motivation",
+    title: "Open When You Need Motivation",
+    seal: "M",
+    body: [
+      "You’ve survived every difficult day so far. That’s not luck — that’s strength, quietly proven again and again.",
+      "Whatever you’re facing now is just the next thing, not the last thing. You’ll get through this one too.",
+      "Stand a little taller today. I’m proud of you — for trying, even when it’s hard."
+    ]
+  },
+  {
+    id: "lonely",
+    title: "Open When You Feel Lonely",
+    seal: "L",
+    body: [
+      "Loneliness can sit in a room full of people just as easily as an empty one. I know.",
+      "You are thought of, often and warmly, even on the days it doesn’t feel that way.",
+      "Reach out — to me, to someone, to anyone who feels safe. You don’t have to carry quiet rooms alone."
+    ],
+    audio: true
+  },
+  {
+    id: "thatday",
+    title: "Open When You Remember That Day",
+    seal: "•",
+    dark: true,
+    quote: "I know I can’t erase that memory. If I could, I would. Since I can’t… I promise to spend my days creating memories that slowly become stronger than that one.",
+    body: [
+      "This page doesn’t need bright colours or easy words. Some memories deserve quiet instead.",
+      "I won’t pretend it didn’t happen, or rush you toward forgetting. I just want you to know I see it, I carry it too, and I’m not going anywhere."
+    ],
+    audio: true
+  },
+  {
+    id: "doubt",
+    title: "Open When You Doubt My Love",
+    seal: "D",
+    body: [
+      "If doubt has crept in, let me say this plainly, without metaphor: I love you. Today, and the version of today that comes tomorrow.",
+      "Doubt isn’t evidence — it’s just fear wearing a convincing voice. Don’t let it speak for me.",
+      "Ask me, anytime, in any way you need. I will tell you the truth, always: it’s you."
+    ]
+  },
+  {
+    id: "birthday",
+    title: "Open On Your Birthday",
+    seal: "B",
+    body: [
+      "Happy birthday. Another year of you in this world — that alone is worth celebrating.",
+      "I hope today feels light and full, surrounded by people who love you the way you deserve.",
+      "Here’s to everything still ahead of you. I’m grateful to be watching it unfold."
+    ],
+    gallery: true, spotify: true,
+    song: { title: "Replace With Your Song", artist: "Artist Name" }
+  },
+  {
+    id: "meetagain",
+    title: "Open When We Meet Again",
+    seal: "♡",
+    body: [
+      "However long it’s been, however much has changed — some things won’t have. The way I feel about you is one of them.",
+      "I’ve thought about this moment more times than I can count. I hope it’s everything we imagined, and quieter, and softer too.",
+      "Welcome back to each other."
+    ],
+    gallery: true
+  },
+];
+
+const LAST = {
+  id: "last",
+  title: "Open Last ❤️",
+  seal: "♡"
+};
+
+/* =========================================================
+   LENIS SMOOTH SCROLL
+========================================================= */
+let lenis;
+if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  lenis = new Lenis({ duration: 1.1, smoothWheel: true, easing: (t) => 1 - Math.pow(1 - t, 3) });
+  function raf(time){ lenis.raf(time); requestAnimationFrame(raf); }
+  requestAnimationFrame(raf);
+  lenis.on('scroll', () => gsap.ticker && gsap.ticker.tick && null);
+  gsap.ticker.add((time) => lenis.raf(time * 1000));
+  gsap.ticker.lagSmoothing(0);
+}
+
+/* =========================================================
+   HERO ENTRANCE + TYPEWRITER
+========================================================= */
+gsap.set('.hero-char', { y: 40, autoAlpha: 0 });
+gsap.set('.hero-line', { y: 14, autoAlpha: 0 });
+const heroTl = gsap.timeline({ delay: .15 });
+heroTl
+  .to('.hero-line:first-of-type', { y: 0, autoAlpha: 1, duration: .7, ease: 'power2.out' })
+  .to('.hero-char', { y: 0, autoAlpha: 1, duration: .8, ease: 'power3.out', stagger: .035 }, '-=.3')
+  .to('.hero-line:last-of-type', { y: 0, autoAlpha: 1, duration: .7, ease: 'power2.out' }, '-=.2');
+
+const TYPE_TEXT = "Some moments can’t be changed. But I hope these words make sure you never feel alone again.";
+const typeEl = document.getElementById('typewriter');
+let typeIdx = 0;
+function typeNext(){
+  if(typeIdx <= TYPE_TEXT.length){
+    typeEl.textContent = TYPE_TEXT.slice(0, typeIdx);
+    typeIdx++;
+    setTimeout(typeNext, 18 + Math.random()*22);
+  } else {
+    document.querySelector('.typewriter-cursor')?.classList.add('opacity-0');
+  }
+}
+setTimeout(typeNext, 1300);
+</script>
+<style>
+  .typewriter-cursor{ display:inline-block; margin-left:2px; color:#7C92A8; animation: blink 1s steps(1) infinite; transition: opacity .4s ease; }
+  html.dark .typewriter-cursor{ color:#E4C896; }
+  @keyframes blink{ 50%{ opacity:0; } }
+</style>
+<script>
+/* =========================================================
+   BUILD ENVELOPE GRID
+========================================================= */
+const grid = document.getElementById('envelopeGrid');
+
+function envelopeCard(item){
+  const card = document.createElement('div');
+  card.className = "envelope-card cursor-pointer group";
+  card.setAttribute('tabindex','0');
+  card.setAttribute('role','button');
+  card.setAttribute('aria-label', 'Open letter: ' + item.title);
+  card.dataset.id = item.id;
+  card.innerHTML = `
+    <div class="envelope-front">
+      <div class="letter-peek"></div>
+      <div class="flap"></div>
+      <div class="seal">${item.seal}</div>
+      <div class="env-label">${item.title}</div>
+    </div>
+  `;
+  return card;
+}
+
+function renderEnvelopes(){
+  grid.innerHTML = "";
+  LETTERS.forEach(item => grid.appendChild(envelopeCard(item)));
+  const lastWrap = document.createElement('div');
+  lastWrap.className = "sm:col-span-2 lg:col-span-3 max-w-md mx-auto w-full";
+  lastWrap.appendChild(envelopeCard(LAST));
+  grid.appendChild(lastWrap);
+
+  gsap.utils.toArray('.envelope-card').forEach((card, i) => {
+    gsap.fromTo(card, { autoAlpha: 0, y: 36, rotateZ: i % 2 === 0 ? -2 : 2 },
+      {
+        autoAlpha: 1, y: 0, rotateZ: 0, duration: .9, ease: 'power3.out',
+        scrollTrigger: { trigger: card, start: 'top 92%', once: true }
+      });
+  });
+}
+window.renderEnvelopes = renderEnvelopes;
+window.setLetters = function(letters){ LETTERS = letters; renderEnvelopes(); };
+renderEnvelopes();
+
+/* sound support — generated softly via WebAudio, no external file required */
+let audioCtx;
+function playPaperSound(){
+  try{
+    audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+    const dur = .5;
+    const bufferSize = audioCtx.sampleRate * dur;
+    const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+    const data = buffer.getChannelData(0);
+    for(let i=0;i<bufferSize;i++){ data[i] = (Math.random()*2-1) * (1 - i/bufferSize); }
+    const noise = audioCtx.createBufferSource();
+    noise.buffer = buffer;
+    const filter = audioCtx.createBiquadFilter();
+    filter.type = 'highpass'; filter.frequency.value = 800;
+    const gainNode = audioCtx.createGain();
+    gainNode.gain.setValueAtTime(.12, audioCtx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(.001, audioCtx.currentTime + dur);
+    noise.connect(filter).connect(gainNode).connect(audioCtx.destination);
+    noise.start();
+  }catch(e){ /* audio unsupported — silently ignore */ }
+}
+
+grid.addEventListener('click', (e) => {
+  const card = e.target.closest('.envelope-card');
+  if(!card) return;
+  openSequence(card, e);
+});
+grid.addEventListener('keypress', (e) => {
+  if(e.key === 'Enter'){
+    const card = e.target.closest('.envelope-card');
+    if(card) openSequence(card, e);
+  }
+});
+
+function openSequence(card, evt){
+  if(card.classList.contains('open')) return;
+  playPaperSound();
+  burstAt(evt.clientX ?? card.getBoundingClientRect().x, evt.clientY ?? card.getBoundingClientRect().y);
+  card.classList.add('open');
+  const id = card.dataset.id;
+  setTimeout(() => {
+    if(id === 'last'){ playFinale(); }
+    else { openLetter(id); }
+  }, 750);
+}
+
+/* =========================================================
+   POLAROID GALLERY + LIGHTBOX
+========================================================= */
+const lightbox = document.getElementById('lightbox');
+const lightboxStage = document.getElementById('lightboxStage');
+document.getElementById('lightboxClose').addEventListener('click', closeLightbox);
+lightbox.addEventListener('click', (e) => { if(e.target === lightbox) closeLightbox(); });
+
+function openLightbox(label, url){
+  lightboxStage.innerHTML = `<div class="polaroid max-w-sm w-full" style="cursor:default">
+      <div class="polaroid-img" style="aspect-ratio:4/5${url ? `;background:url('${url}') center/cover` : ''}">${url ? '' : label}</div>
+      <p class="font-hand text-xl text-center mt-2 text-ink/80">a memory worth keeping</p>
+    </div>`;
+  lightbox.style.display = 'block';
+  document.body.style.overflow = 'hidden';
+  gsap.fromTo(lightboxStage.firstElementChild, { autoAlpha:0, scale:.85 }, { autoAlpha:1, scale:1, duration:.5, ease:'power3.out' });
+}
+function closeLightbox(){
+  lightbox.style.display = 'none';
+  document.body.style.overflow = '';
+}
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && lightbox.style.display === 'block') closeLightbox(); });
+
+function galleryHTML(dark, item){
+  const imgs = (item.galleryImages && item.galleryImages.length) ? item.galleryImages : null;
+  const items = imgs
+    ? imgs.map((url, idx) => ({ url, date: item.galleryCaptions?.[idx] || 'a moment worth keeping' }))
+    : [
+        { label: '01 — replace with a photo', date: 'a morning, somewhere' },
+        { label: '02 — replace with a photo', date: 'a quiet afternoon' },
+        { label: '03 — replace with a photo', date: 'a moment worth keeping' },
+      ];
+  return `<div class="my-10 fade-up">
+    <p class="font-sans text-[10px] tracking-[0.3em] uppercase ${dark ? 'text-beige/40' : 'text-grey'} mb-4">a small memory gallery</p>
+    <div class="grid grid-cols-3 gap-4 sm:gap-5">
+      ${items.map((it, idx) => `
+        <button type="button" class="polaroid gallery-item text-left" style="--tilt:${idx % 2 === 0 ? '-2deg' : '2deg'}" data-url="${it.url || ''}" data-label="${it.label || ''}" aria-label="Open memory photo ${idx+1}">
+          <div class="polaroid-img"${it.url ? ` style="background:url('${it.url}') center/cover"` : ''}>${it.url ? '' : it.label}</div>
+          <p class="font-hand text-sm text-center mt-1.5 text-ink/70">${it.date}</p>
+        </button>
+      `).join('')}
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   VOICE NOTE PLAYER (custom, waveform)
+========================================================= */
+function voicePlayerHTML(dark, audioUrl){
+  const bars = Array.from({length: 38}, () => Math.round(8 + Math.random()*24));
+  return `<div class="my-10 fade-up">
+    <p class="font-sans text-[10px] tracking-[0.3em] uppercase ${dark ? 'text-beige/40' : 'text-grey'} mb-3">a voice note</p>
+    <div class="voice-player p-4 sm:p-5 flex items-center gap-4">
+      <button type="button" class="play-btn voice-play" aria-label="Play voice note" data-magnetic>
+        <svg class="w-4 h-4 play-icon" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        <svg class="w-4 h-4 pause-icon hidden" fill="currentColor" viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>
+      </button>
+      <div class="flex-1">
+        <div class="waveform" aria-hidden="true">
+          ${bars.map(h => `<div class="wave-bar" style="height:${h}px"></div>`).join('')}
+        </div>
+        <div class="flex items-center justify-between mt-1.5">
+          <span class="font-sans text-[10px] text-grey time-current">0:00</span>
+          <button type="button" class="font-sans text-[10px] text-grey speed-btn hover:text-blue-deep dark:hover:text-gold transition-colors" data-magnetic>1.0×</button>
+        </div>
+      </div>
+      <audio class="voice-audio hidden" preload="none">
+        <source src="${audioUrl || 'audio-placeholder.mp3'}" type="audio/mpeg">
+      </audio>
+    </div>
+  </div>`;
+}
+
+function wireVoicePlayers(root){
+  root.querySelectorAll('.voice-player').forEach(player => {
+    const btn = player.querySelector('.voice-play');
+    const playIcon = player.querySelector('.play-icon');
+    const pauseIcon = player.querySelector('.pause-icon');
+    const bars = [...player.querySelectorAll('.wave-bar')];
+    const speedBtn = player.querySelector('.speed-btn');
+    const timeEl = player.querySelector('.time-current');
+    const audio = player.querySelector('.voice-audio');
+    let raf, speeds = [1, 1.25, 1.5, .75], speedIdx = 0;
+
+    function setBarsPlayed(progress){
+      const n = Math.floor(bars.length * progress);
+      bars.forEach((b, i) => b.classList.toggle('played', i < n));
+    }
+    function formatTime(s){
+      const m = Math.floor(s/60), sec = Math.floor(s%60);
+      return `${m}:${sec.toString().padStart(2,'0')}`;
+    }
+    function tick(){
+      if(audio.paused){ cancelAnimationFrame(raf); return; }
+      const duration = audio.duration || 30;
+      const progress = Math.min(audio.currentTime/duration, 1);
+      setBarsPlayed(progress);
+      timeEl.textContent = formatTime(audio.currentTime);
+      bars.forEach((b, i) => {
+        b.style.transform = Math.abs(i - progress*bars.length) < 2 ? 'scaleY(1.15)' : 'scaleY(1)';
+      });
+      raf = requestAnimationFrame(tick);
+    }
+    audio.addEventListener('ended', () => {
+      playIcon.classList.remove('hidden'); pauseIcon.classList.add('hidden');
+      setBarsPlayed(0); timeEl.textContent = '0:00';
+    });
+    btn.addEventListener('click', () => {
+      audio.preload = 'auto';
+      if(audio.paused){
+        audio.play().catch(()=>{});
+        playIcon.classList.add('hidden'); pauseIcon.classList.remove('hidden');
+        gsap.fromTo(btn, { scale:.9 }, { scale:1, duration:.4, ease:'back.out(2)' });
+        tick();
+      } else {
+        audio.pause();
+        playIcon.classList.remove('hidden'); pauseIcon.classList.add('hidden');
+      }
+    });
+    speedBtn.addEventListener('click', () => {
+      speedIdx = (speedIdx + 1) % speeds.length;
+      audio.playbackRate = speeds[speedIdx];
+      speedBtn.textContent = speeds[speedIdx].toFixed(2).replace(/0$/,'') + '×';
+    });
+  });
+}
+
+/* =========================================================
+   SPOTIFY GLASS CARD
+========================================================= */
+function spotifyHTML(dark, song){
+  if(song?.embedUrl){
+    return `<div class="my-10 fade-up">
+      <p class="font-sans text-[10px] tracking-[0.3em] uppercase ${dark ? 'text-beige/40' : 'text-grey'} mb-3">a song for this moment</p>
+      <iframe style="border-radius:12px" src="${song.embedUrl}" width="100%" height="152" frameBorder="0"
+        allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+    </div>`;
+  }
+  const title = song?.title || 'Replace With Your Song';
+  const artist = song?.artist || 'Artist Name';
+  return `<div class="my-10 fade-up">
+    <p class="font-sans text-[10px] tracking-[0.3em] uppercase ${dark ? 'text-beige/40' : 'text-grey'} mb-3">a song for this moment</p>
+    <div class="spotify-card">
+      <div class="album-art">
+        <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2a10 10 0 100 20 10 10 0 000-20zm4.4 14.4a.6.6 0 01-.83.2c-2.27-1.39-5.13-1.7-8.5-.93a.6.6 0 11-.27-1.17c3.7-.84 6.86-.48 9.4 1.07a.6.6 0 01.2.83zm1.2-2.7a.75.75 0 01-1.03.25c-2.6-1.6-6.56-2.06-9.63-1.13a.75.75 0 11-.43-1.44c3.52-1.06 7.9-.55 10.9 1.29a.75.75 0 01.19 1.03zm.1-2.82C14.9 9.1 9.5 8.9 6.6 9.8a.9.9 0 11-.52-1.72c3.34-1.02 9.3-.8 12.96 1.39a.9.9 0 11-.94 1.53z"/></svg>
+      </div>
+      <div class="flex-1 min-w-0">
+        <p class="font-serif text-base sm:text-lg truncate text-ink dark:text-beige">${title}</p>
+        <p class="font-sans text-[11px] text-grey truncate">${artist}</p>
+      </div>
+      <div class="eq" aria-hidden="true"><span></span><span></span><span></span><span></span></div>
+      <a href="${song?.url || 'https://open.spotify.com'}" target="_blank" rel="noopener noreferrer" data-magnetic
+        class="ml-1 w-9 h-9 rounded-full flex items-center justify-center border ${dark ? 'border-beige/20' : 'border-ink/10'} hover:border-blue-deep dark:hover:border-gold transition-colors flex-shrink-0"
+        aria-label="Open in Spotify">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="1.5" viewBox="0 0 24 24"><path d="M7 17L17 7M9 7h8v8"/></svg>
+      </a>
+    </div>
+  </div>`;
+}
+
+/* =========================================================
+   LETTER MODAL RENDER
+========================================================= */
+const overlay = document.getElementById('letterOverlay');
+const sheet = document.getElementById('letterSheet');
+const scrollEl = document.getElementById('letterScroll');
+const progressBar = document.getElementById('reading-progress');
+
+function placeholderBlock(label, extraClasses=""){
+  return `<div class="${extraClasses} rounded-md border border-dashed border-ink/15 dark:border-beige/20 flex items-center justify-center text-grey font-sans text-[11px] tracking-wide uppercase py-10 px-4">${label}</div>`;
+}
+
+function signatureSVG(dark){
+  const stroke = dark ? '#C9A467' : '#5A7894';
+  return `<svg class="signature-path" viewBox="0 0 220 60" width="160" height="44" fill="none" stroke="${stroke}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M8 40c10-22 18-26 24-10 4 10-2 18-10 14-6-3 2-16 14-18 14-2 18 10 10 16-6 4 4 10 12 2 6-6 10-18 18-16 6 1.5 0 14 8 14 8 0 14-12 22-14 6-1.5 10 6 16 4 8-2.5 12-12 20-12"/>
+  </svg>`;
+}
+
+function openLetter(id){
+  const item = LETTERS.find(l => l.id === id);
+  if(!item) return;
+
+  const dark = !!item.dark;
+  sheet.className = "letter-sheet px-7 sm:px-16 py-14 sm:py-20" + (dark ? " dark-theme" : "");
+
+  let html = "";
+
+  html += `<p class="font-sans text-[10px] tracking-[0.35em] uppercase ${dark ? 'text-beige/40' : 'text-grey'} mb-4 fade-up">a letter for you</p>`;
+  html += `<h2 class="font-hand text-4xl sm:text-5xl mb-8 fade-up ${dark ? 'text-beige' : 'text-ink dark:text-beige'}">${item.title}</h2>`;
+
+  if(item.quote){
+    html += `<blockquote class="font-serif italic text-xl sm:text-2xl leading-relaxed border-l-2 ${dark ? 'border-blue/60 text-beige/85' : 'border-blue dark:border-gold text-ink/80'} pl-6 mb-10 fade-up">“${item.quote.replace(/^“|”$/g,'')}”</blockquote>`;
+  }
+
+  item.body.forEach(p => {
+    html += `<p class="font-serif text-lg sm:text-xl leading-[1.9] ${dark ? 'text-beige/75' : 'text-ink/80 dark:text-beige/75'} mb-6 fade-up">${p}</p>`;
+  });
+
+  html += `<div class="my-10 fade-up">`;
+  html += item.photo
+    ? `<img src="${item.photo}" loading="lazy" class="w-full h-56 sm:h-72 object-cover rounded-md" alt="">`
+    : placeholderBlock("photo placeholder — replace with an image", "h-56 sm:h-72");
+  html += `</div>`;
+
+  if(item.audio){ html += voicePlayerHTML(dark, item.audioUrl); }
+  if(item.spotify){ html += spotifyHTML(dark, item.song); }
+  if(item.gallery){ html += galleryHTML(dark, item); }
+
+  html += `<div class="mt-14 fade-up">${signatureSVG(dark)}</div>`;
+
+  sheet.innerHTML = html;
+  overlay.style.display = 'block';
+  scrollEl.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
+  progressBar.style.display = 'block';
+  progressBar.style.width = '0%';
+
+  wireVoicePlayers(sheet);
+  sheet.querySelectorAll('.gallery-item').forEach(btn => {
+    btn.addEventListener('click', () => openLightbox(btn.dataset.label, btn.dataset.url));
+  });
+
+  // paper unfold + reveal animation
+  gsap.fromTo(sheet, { autoAlpha:0, y:48, rotateX: 10, transformOrigin:"top center" },
+    { autoAlpha:1, y:0, rotateX:0, duration:1, ease:"power3.out" });
+  gsap.fromTo(sheet.querySelectorAll('.fade-up'),
+    { autoAlpha:0, y:18 },
+    { autoAlpha:1, y:0, duration:.7, ease:"power2.out", stagger:.07, delay:.3 });
+
+  // animated signature draw-in
+  const sigPath = sheet.querySelector('.signature-path');
+  if(sigPath){
+    gsap.to(sigPath, { strokeDashoffset: 0, duration: 1.6, ease: 'power2.inOut', delay: .3 + item.body.length * .07 + .6 });
+  }
+
+  scrollEl.onscroll = () => {
+    const max = scrollEl.scrollHeight - scrollEl.clientHeight;
+    const pct = max > 0 ? (scrollEl.scrollTop / max) * 100 : 0;
+    progressBar.style.width = pct + '%';
+  };
+}
+
+function closeLetter(){
+  gsap.to(sheet, { autoAlpha:0, y:24, rotateX: -4, duration:.45, ease:"power2.in", onComplete: () => {
+    overlay.style.display = 'none';
+    progressBar.style.display = 'none';
+    document.body.style.overflow = '';
+    document.querySelectorAll('.envelope-card.open').forEach(c => {
+      if(c.dataset.id !== 'last') c.classList.remove('open');
+    });
+  }});
+}
+document.getElementById('closeLetter').addEventListener('click', closeLetter);
+overlay.addEventListener('click', (e) => { if(e.target === overlay) closeLetter(); });
+document.addEventListener('keydown', (e) => { if(e.key === 'Escape' && overlay.style.display === 'block') closeLetter(); });
+
+/* =========================================================
+   CINEMATIC FINALE — Open Last
+========================================================= */
+const finale = document.getElementById('finale');
+function playFinale(){
+  finale.classList.remove('hidden');
+  document.body.style.overflow = 'hidden';
+  const l1 = document.getElementById('finaleLine1');
+  const l2 = document.getElementById('finaleLine2');
+  const l3 = document.getElementById('finaleLine3');
+  const btn = document.getElementById('finaleClose');
+
+  l1.textContent = window.SETTINGS?.finaleLine1 || "Thank you for giving me the chance to become a better man.";
+  l2.textContent = window.SETTINGS?.finaleLine2 || "No matter where life takes us… loving you has changed me forever.";
+  l3.textContent = window.SETTINGS?.finaleSignature || "— Owais ❤️";
+
+  const tl = gsap.timeline();
+  tl.fromTo(finale, { autoAlpha:0 }, { autoAlpha:1, duration:1.3, ease:"power1.inOut" })
+    .to(l1, { autoAlpha:1, duration:2, ease:"power1.inOut" }, "+=.6")
+    .to(l1, { autoAlpha:1, duration:2.4 })
+    .to(l1, { autoAlpha:0, duration:1.2, ease:"power1.inOut" }, "+=.8")
+    .to(l2, { autoAlpha:1, duration:2, ease:"power1.inOut" }, "-=.4")
+    .to(l2, { autoAlpha:1, duration:2.4 })
+    .to(l3, { autoAlpha:1, duration:1.6, ease:"power1.inOut" }, "+=.4")
+    .to(btn, { autoAlpha:1, duration:1.2, ease:"power1.inOut" }, "+=.3");
+}
+document.getElementById('finaleClose').addEventListener('click', () => {
+  gsap.to(finale, { autoAlpha:0, duration:.8, onComplete: () => {
+    finale.classList.add('hidden');
+    document.body.style.overflow = '';
+    gsap.set(['#finaleLine1','#finaleLine2','#finaleLine3','#finaleClose'], { autoAlpha:0 });
+    document.querySelectorAll('.envelope-card.open').forEach(c => c.classList.remove('open'));
+  }});
+});
+
+/* =========================================================
+   THEME TOGGLE (premium dark theme, not inverted)
+========================================================= */
+const root = document.documentElement;
+const themeToggle = document.getElementById('themeToggle');
+const iconSun = document.getElementById('iconSun');
+const iconMoon = document.getElementById('iconMoon');
+let fireflyLayer = null;
+
+function setTheme(dark){
+  root.classList.toggle('dark', dark);
+  iconSun.classList.toggle('hidden', dark);
+  iconMoon.classList.toggle('hidden', !dark);
+  localStorage.setItem('ow-theme', dark ? 'dark' : 'light');
+  toggleFireflies(dark);
+}
+const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+const saved = localStorage.getItem('ow-theme');
+setTheme(saved ? saved === 'dark' : prefersDark);
+themeToggle.addEventListener('click', () => setTheme(!root.classList.contains('dark')));
+
+/* =========================================================
+   FLOATING DUST PARTICLES + PETALS + FIREFLIES
+========================================================= */
+const pContainer = document.getElementById('particles');
+const PARTICLE_COUNT = window.innerWidth < 640 ? 14 : 26;
+for(let i=0;i<PARTICLE_COUNT;i++){
+  const p = document.createElement('div');
+  const size = Math.random()*3 + 1.5;
+  p.className = 'particle';
+  p.style.width = size+'px';
+  p.style.height = size+'px';
+  p.style.left = Math.random()*100+'vw';
+  p.style.top = Math.random()*100+'vh';
+  p.style.opacity = (Math.random()*.5+.2).toFixed(2);
+  pContainer.appendChild(p);
+  gsap.to(p, {
+    y: `-=${Math.random()*120+60}`,
+    x: `+=${(Math.random()-.5)*60}`,
+    duration: Math.random()*10+10,
+    repeat: -1, yoyo: true, ease: "sine.inOut", delay: Math.random()*5
+  });
+}
+
+const PETAL_COUNT = window.innerWidth < 640 ? 5 : 9;
+for(let i=0;i<PETAL_COUNT;i++){
+  const petal = document.createElement('div');
+  const size = Math.random()*10 + 8;
+  petal.className = 'petal';
+  petal.style.width = size+'px';
+  petal.style.height = size*.8+'px';
+  petal.style.left = Math.random()*100+'vw';
+  petal.style.top = '-5vh';
+  pContainer.appendChild(petal);
+  gsap.to(petal, {
+    y: '110vh',
+    x: `+=${(Math.random()-.5)*200}`,
+    rotate: Math.random()*360,
+    duration: Math.random()*14+16,
+    repeat: -1, ease: 'none', delay: Math.random()*12
+  });
+}
+
+function toggleFireflies(on){
+  if(on && !fireflyLayer){
+    fireflyLayer = document.createElement('div');
+    fireflyLayer.id = 'fireflyLayer';
+    fireflyLayer.className = 'fixed inset-0 pointer-events-none z-10 overflow-hidden';
+    document.body.appendChild(fireflyLayer);
+    const count = window.innerWidth < 640 ? 8 : 16;
+    for(let i=0;i<count;i++){
+      const fly = document.createElement('div');
+      const size = Math.random()*3+2;
+      fly.className = 'firefly';
+      fly.style.width = size+'px';
+      fly.style.height = size+'px';
+      fly.style.left = Math.random()*100+'vw';
+      fly.style.top = Math.random()*100+'vh';
+      fireflyLayer.appendChild(fly);
+      gsap.to(fly, { opacity: () => Math.random()*.8+.2, duration: Math.random()*2+1.5, repeat:-1, yoyo:true, ease:'sine.inOut', delay: Math.random()*3 });
+      gsap.to(fly, {
+        x: `+=${(Math.random()-.5)*140}`, y: `+=${(Math.random()-.5)*140}`,
+        duration: Math.random()*8+8, repeat:-1, yoyo:true, ease:'sine.inOut', delay: Math.random()*4
+      });
+    }
+  } else if(!on && fireflyLayer){
+    fireflyLayer.remove();
+    fireflyLayer = null;
+  }
+}
+
+/* =========================================================
+   LUXURY CURSOR + MAGNETIC + RIPPLE + CLICK BURST
+========================================================= */
+const dot = document.getElementById('cursorDot');
+const ring = document.getElementById('cursorRing');
+let mx=0,my=0, rx=0, ry=0;
+const isTouch = window.matchMedia('(hover:none)').matches;
+
+if(!isTouch){
+  window.addEventListener('mousemove', (e) => {
+    mx = e.clientX; my = e.clientY;
+    dot.style.left = mx+'px'; dot.style.top = my+'px';
+  });
+  (function loop(){
+    rx += (mx-rx)*.16; ry += (my-ry)*.16;
+    ring.style.left = rx+'px'; ring.style.top = ry+'px';
+    requestAnimationFrame(loop);
+  })();
+
+  function bindCursorTargets(){
+    document.querySelectorAll('a, button, .envelope-card, .gallery-item').forEach(el => {
+      if(el.dataset.cursorBound) return;
+      el.dataset.cursorBound = '1';
+      el.addEventListener('mouseenter', () => ring.classList.add('cursor-hover'));
+      el.addEventListener('mouseleave', () => ring.classList.remove('cursor-hover'));
+    });
+  }
+  bindCursorTargets();
+  new MutationObserver(bindCursorTargets).observe(document.body, { childList:true, subtree:true });
+}
+
+function burstAt(x, y){
+  const colors = root.classList.contains('dark') ? ['#E4C896','#C9A467','#9C9690'] : ['#7C92A8','#5A7894','#DCCBAE'];
+  for(let i=0;i<10;i++){
+    const p = document.createElement('div');
+    p.className = 'click-burst';
+    const size = Math.random()*5+3;
+    p.style.width = size+'px'; p.style.height = size+'px';
+    p.style.left = x+'px'; p.style.top = y+'px';
+    p.style.background = `radial-gradient(circle, ${colors[i%colors.length]}, transparent 70%)`;
+    document.body.appendChild(p);
+    const angle = Math.random()*Math.PI*2;
+    const dist = Math.random()*60+30;
+    gsap.to(p, {
+      x: Math.cos(angle)*dist, y: Math.sin(angle)*dist,
+      opacity: 0, scale: 0, duration: .7+Math.random()*.4, ease: 'power2.out',
+      onComplete: () => p.remove()
+    });
+  }
+}
+document.addEventListener('click', (e) => {
+  if(e.target.closest('button, a, .envelope-card')) burstAt(e.clientX, e.clientY);
+});
+
+/* magnetic buttons */
+if(!isTouch){
+  document.querySelectorAll('[data-magnetic]').forEach(el => {
+    el.addEventListener('mousemove', (e) => {
+      const rect = el.getBoundingClientRect();
+      const relX = e.clientX - rect.left - rect.width/2;
+      const relY = e.clientY - rect.top - rect.height/2;
+      gsap.to(el, { x: relX*.25, y: relY*.25, duration:.4, ease:'power2.out' });
+    });
+    el.addEventListener('mouseleave', () => gsap.to(el, { x:0, y:0, duration:.5, ease:'elastic.out(1,.4)' }));
+  });
+}
+
+/* ripple effect on buttons */
+document.addEventListener('click', (e) => {
+  const btn = e.target.closest('.ripple-btn');
+  if(!btn) return;
+  const rect = btn.getBoundingClientRect();
+  const ripple = document.createElement('span');
+  const size = Math.max(rect.width, rect.height) * 1.4;
+  ripple.className = 'ripple';
+  ripple.style.width = ripple.style.height = size+'px';
+  ripple.style.left = (e.clientX - rect.left - size/2)+'px';
+  ripple.style.top = (e.clientY - rect.top - size/2)+'px';
+  btn.appendChild(ripple);
+  setTimeout(() => ripple.remove(), 650);
+});
+</script>
+</body>
+</html>
